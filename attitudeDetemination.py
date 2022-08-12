@@ -8,8 +8,19 @@ Created on Mon Jul 11 09:31:55 2022
 """ Dependencies"""
 import numpy as np
 
+import ppigrf
+from datetime import datetime
+
 
 #inputs
+#igrf model - need to confirm that the coord system is North, East, Up
+#time = "2022-07-18" #year month day
+time= datetime(2022, 7, 18)
+lat = 0.0   #is this decimal degrees?
+long = 0.0
+alt = 450   #km
+
+
 #measurements in body frame
 v1B_x = 2
 v1B_y = 1
@@ -38,6 +49,13 @@ v2b = [v2B_x, v2B_y, v2B_z]
 v1i = [v1I_x, v1I_y, v1I_z]
 v2i = [v2I_x, v2I_y, v2I_z]
 
+def rot2Euler(rotationMatrix):
+    i1 = rotationMatrix[0,0]
+    i2 = rotationMatrix[1,1]
+    i3 = rotationMatrix[2,2]
+    
+    return i1, i2, i3
+    
 
 
 #Construction of TRIAD in body coord frame
@@ -63,6 +81,25 @@ t_i = np.array([t1_i, t2_i, t3_i])
 
 #Compute rotation matrix between triads
 R = np.matmul(t_b,t_i.transpose())
+
+#calculate triad euler angles from rotation matrix
+eulerAngles = rot2Euler(R)
+
+
+#querry igrf to get inertial frame B-Field components
+
+
+#B_i = igrf.igrf(time, lat, long, alt)
+Be, Bn, Bu = ppigrf.igrf(long, lat, alt, time) # returns east, north, up
+
+#Get Sun vector
+
+
+print(Be, Bn, Bu)
+
+
+
+
 
 
 
